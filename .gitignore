@@ -1,0 +1,8 @@
+# Python
+___pycache__/
+*.py[cod]
+
+# Tools / environments
+.venv/
+.mypy_cache/
+.pytest_cache/
