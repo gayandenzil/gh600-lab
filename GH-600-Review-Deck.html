@@ -1,0 +1,241 @@
+<title>GH-600 Review Deck</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: index-card study deck — header with countdown + domain coverage, filter rail, grid of flippable ruled cards; alternate dense cheat-sheet view */
+:root{
+  --bg:#eef0f4; --surface:#ffffff; --ink:#1b2130; --muted:#5d6577; --line:#d9dde6;
+  --accent:#2c56c9; --accent-soft:#e3e9fa; --margin:#d4475e; --rule:#e6ecf7;
+  --good:#1f8a5b; --good-soft:#dcf2e7; --warn:#b26a00; --warn-soft:#fbecd3;
+  --d1:#2c56c9; --d2:#0f8a8a; --d3:#7a4fc4; --d4:#c2410c; --d5:#a1367a; --d6:#4d7c0f; --gen:#5d6577;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11141b; --surface:#1a1f29; --ink:#e7eaf1; --muted:#9aa3b5; --line:#2c3341;
+  --accent:#7d9cf0; --accent-soft:#232d47; --margin:#e46a7e; --rule:#232a37;
+  --good:#4cc38a; --good-soft:#173528; --warn:#e8a33d; --warn-soft:#3a2c14;
+  --d1:#7d9cf0; --d2:#3cc4c4; --d3:#b08ef0; --d4:#f08a52; --d5:#e07ab8; --d6:#9ccc4a; --gen:#9aa3b5;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11141b; --surface:#1a1f29; --ink:#e7eaf1; --muted:#9aa3b5; --line:#2c3341;
+  --accent:#7d9cf0; --accent-soft:#232d47; --margin:#e46a7e; --rule:#232a37;
+  --good:#4cc38a; --good-soft:#173528; --warn:#e8a33d; --warn-soft:#3a2c14;
+  --d1:#7d9cf0; --d2:#3cc4c4; --d3:#b08ef0; --d4:#f08a52; --d5:#e07ab8; --d6:#9ccc4a; --gen:#9aa3b5;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:end;margin-bottom:22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,4.4vw,44px);line-height:1.05;margin:6px 0 8px;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:0}
+.count{text-align:right;font-variant-numeric:tabular-nums}
+.count b{font-family:var(--display);font-size:48px;line-height:1;display:block;color:var(--accent)}
+.count span{font-size:13px;color:var(--muted)}
+.domains{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:0 0 22px}
+.dom{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.dom .k{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--c)}
+.dom .n{font-size:13px;font-weight:600;margin:2px 0 6px;line-height:1.25}
+.dom .w{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button,.chip,.btn{font:inherit;font-size:13px;color:var(--ink);background:transparent;border:0;cursor:pointer;padding:7px 12px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.chip{border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:5px 11px}
+.chip[aria-pressed="true"]{border-color:var(--c,var(--accent));color:var(--c,var(--accent));font-weight:600;box-shadow:inset 0 0 0 1px var(--c,var(--accent))}
+.btn{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.spacer{flex:1}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stat{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{perspective:1200px;min-height:230px;cursor:pointer}
+.inner{position:relative;width:100%;height:100%;min-height:230px;transition:transform .45s ease;transform-style:preserve-3d}
+.card.flip .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px 14px 30px;display:flex;flex-direction:column;overflow:auto;
+  background-image:linear-gradient(90deg,transparent 21px,var(--margin) 21px,var(--margin) 22px,transparent 22px),repeating-linear-gradient(transparent 0 25px,var(--rule) 25px 26px);background-position:0 0,0 44px}
+.back{transform:rotateY(180deg)}
+.meta{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px}
+.tag{color:var(--c);font-weight:500}
+.new{background:var(--warn-soft);color:var(--warn);padding:1px 6px;border-radius:4px}
+.mark{margin-left:auto}
+.mark.got{color:var(--good)} .mark.rev{color:var(--warn)}
+.q{font-family:var(--display);font-weight:500;font-size:19px;line-height:1.3;margin:auto 0;text-wrap:balance}
+.hint{font-size:12px;color:var(--muted);margin-top:10px}
+.a{font-size:14px;line-height:1.55}
+.a ul{margin:4px 0;padding-left:18px} .a li{margin:2px 0}
+.trap{margin-top:8px;font-size:13px;background:var(--warn-soft);color:var(--ink);border-left:3px solid var(--warn);padding:6px 8px;border-radius:0 4px 4px 0}
+.acts{display:flex;gap:8px;margin-top:auto;padding-top:10px}
+.acts button{font:inherit;font-size:12px;border-radius:6px;padding:5px 10px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.acts .g{border-color:var(--good);color:var(--good)} .acts .r{border-color:var(--warn);color:var(--warn)}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.sec h2{font-family:var(--display);font-size:17px;margin:0 0 8px;color:var(--c)}
+.row{padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.row:first-of-type{border-top:0}
+.row b{display:block;font-weight:600;margin-bottom:2px}
+.row ul{margin:2px 0;padding-left:18px}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+footer{margin-top:28px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.domains{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){header{grid-template-columns:1fr}.count{text-align:left}.domains{grid-template-columns:repeat(2,minmax(0,1fr))}.grid,.sheet{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Developing in Agentic AI Systems · pass 700/1000</div>
+      <h1>GH-600 Review Deck</h1>
+      <p class="sub">Tap a card to flip it. Mark it <em>Got it</em> or <em>Review</em>; your marks stay in this browser. New cards are added after each lesson.</p>
+    </div>
+    <div class="count"><b id="days">–</b><span>days to target exam date (3 Dec 2026)</span></div>
+  </header>
+
+  <section class="domains" id="domains" aria-label="Exam domains"></section>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="View">
+      <button id="vCards" aria-pressed="true">Cards</button>
+      <button id="vSheet" aria-pressed="false">Cheat sheet</button>
+    </div>
+    <div id="chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    <div class="spacer"></div>
+    <button class="chip" id="onlyRev" aria-pressed="false">Needs review only</button>
+    <button class="btn" id="shuffle">Shuffle</button>
+    <span class="stat" id="stat"></span>
+  </div>
+
+  <main id="out"></main>
+  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated after Lesson 1, Step 3.</footer>
+</div>
+
+<script>
+const DOMAINS=[
+ {id:"D1",name:"Architecture & SDLC",w:"15–20%",c:"--d1"},
+ {id:"D2",name:"Tools & MCP",w:"20–25%",c:"--d2"},
+ {id:"D3",name:"Memory & state",w:"10–15%",c:"--d3"},
+ {id:"D4",name:"Evaluation & tuning",w:"15–20%",c:"--d4"},
+ {id:"D5",name:"Multi-agent",w:"15–20%",c:"--d5"},
+ {id:"D6",name:"Guardrails",w:"10–15%",c:"--d6"},
+ {id:"GEN",name:"Exam & setup",w:"",c:"--gen"}
+];
+const LATEST="L1";
+const CARDS=[
+ {id:"gen-exam",d:"GEN",l:"L1",q:"GH-600 exam basics: pass mark and the heaviest domain?",
+  a:"<ul><li>Pass: <b>700 / 1000</b></li><li>Heaviest: <b>D2 Tools & MCP (20–25%)</b></li><li>Then D1, D4, D5 (15–20% each); D3, D6 (10–15%)</li><li>Mostly GA features; common Preview features can appear</li></ul>"},
+ {id:"gen-free",d:"GEN",l:"L1",q:"What can you practice on Copilot Free, and what needs a paid plan?",
+  a:"<ul><li><b>Free:</b> VS Code agent mode, custom instructions, <code>.agent.md</code> agents, prompt files, MCP in VS Code</li><li><b>Paid (Pro+):</b> Copilot <b>cloud agent</b>, which takes an assigned issue and opens a draft PR</li><li>Grayed-out models in the picker are premium; <b>Auto</b> picks a model for you</li></ul>"},
+ {id:"d1-agent",d:"D1",l:"L1",q:"What makes something an agent rather than a chat assistant?",
+  a:"An LLM in a loop: <b>Plan → Act (tools) → Observe → Repeat</b> until success criteria are met. Chat <i>suggests</i>; an agent <i>acts</i>: it edits files, runs commands and opens PRs."},
+ {id:"d1-control",d:"D1",l:"L1",q:"What does \"GitHub as the control plane\" mean?",
+  a:"Agent work flows through normal GitHub objects so it can be reviewed and audited:<ul><li>Plan → issue / plan comment</li><li>Code → <code>copilot/*</code> branch</li><li>Test → Actions + <code>copilot-setup-steps.yml</code></li><li>Review → draft PR, rulesets, branch protection</li><li>Secure → CodeQL, secret scanning, Dependabot</li><li>Deploy → environments with required reviewers</li></ul>"},
+ {id:"d1-branch",d:"D1",l:"L1",q:"Where can the Copilot cloud agent push, and what does it open?",
+  a:"Only to branches <b>it created</b> (<code>copilot/…</code>), never <code>main</code>. It opens a <b>draft PR</b> and works in an ephemeral GitHub Actions environment.",
+  t:"The person who <b>asked</b> for the change can't approve that PR, which enforces two-person review."},
+ {id:"d1-ci",d:"D1",l:"L1",q:"The agent opened a PR but CI didn't run. Why?",
+  a:"Actions workflows on the agent's PRs <b>don't run until a human approves them</b> (\"Approve and run workflows\"). This guards against the agent running untrusted workflow changes."},
+ {id:"d1-ios",d:"D1",l:"L1",q:"What three things must every agent task define?",
+  a:"<ul><li><b>Inputs:</b> scoped issue, files, constraints</li><li><b>Outputs:</b> PR, plan, tests, summary</li><li><b>Success criteria:</b> objective checks, e.g. tests pass, CodeQL clean, no changes outside <code>/src</code></li></ul>"},
+ {id:"d1-anti",d:"D1",l:"L1",q:"Name the common agent anti-patterns and their fixes.",
+  a:"<ul><li>Vague task → scoped issue + acceptance criteria</li><li>Giant task/PR → small, separately reviewable tasks</li><li>Plan + act with no checkpoint → separate them; approve the plan</li><li>Too many tools → least privilege</li><li>No verifiable output → inspectable artifacts</li><li>Approve everything → right-size approvals by risk</li></ul>"},
+ {id:"d1-plan",d:"D1",l:"L1",q:"How do you stop an agent from acting before its plan is approved?",
+  a:"Use a <b>planner agent with read-only tools</b> (<code>tools: [\"read\",\"search\"]</code>) that outputs a <b>structured plan</b>. A human validates the plan, then a different agent or mode executes it.",
+  t:"Built-in <b>Plan</b> mode in VS Code is the same idea."},
+ {id:"d2-agentfile",d:"D2",l:"L1",q:"Where do custom agent profiles live (repo and org)?",
+  a:"<ul><li>Repo: <code>.github/agents/&lt;name&gt;.agent.md</code></li><li>Org-wide: the <code>/agents</code> folder of the org's <code>.github-private</code> (recommended, private) or <code>.github</code> repo</li><li>A lower-level file with the same name overrides a higher-level one</li></ul>"},
+ {id:"d2-front",d:"D2",l:"L1",q:"What are the custom agent frontmatter properties? Which one is required?",
+  a:"<ul><li><code>description</code>: <b>required</b></li><li><code>name</code>, <code>tools</code>, <code>model</code></li><li><code>target</code>: <code>vscode</code> | <code>github-copilot</code> (unset = both)</li><li><code>mcp-servers</code>, <code>metadata</code> (ignored in IDEs)</li><li><code>disable-model-invocation</code>, <code>user-invocable</code> (<code>infer</code> is retired)</li><li>Body: instructions, up to 30,000 characters</li></ul>"},
+ {id:"d2-tools",d:"D2",l:"L1",q:"What happens when <code>tools</code> is omitted, and when it's <code>[]</code>?",
+  a:"<ul><li>Omitted → <b>all tools enabled</b></li><li><code>tools: []</code> → <b>no tools</b></li><li>MCP: <code>server/tool</code> or <code>server/*</code></li></ul>",
+  t:"A classic trick question: omitting <code>tools</code> does NOT give least privilege."},
+ {id:"d2-typo",d:"D2",l:"L1",q:"A \"read-only\" planner agent created files anyway. Its profile says <code>tool: [\"read\",\"search\"]</code>. Why?",
+  a:"<code>tool</code> is not a real property, so it was <b>silently ignored</b>. <code>tools</code> was effectively unset, so <b>all tools, including edit, were enabled</b>. Fix: <code>tools:</code>. Root cause: <b>configuration error</b>, not reasoning.",
+  t:"Happened in your own lab. Unknown frontmatter keys don't raise errors."},
+ {id:"d6-enforce",d:"D6",l:"L1",q:"Why is <code>tools: [\"read\",\"search\"]</code> a stronger guardrail than writing \"Do NOT modify files\" in the instructions?",
+  a:"An instruction is a <b>request</b> the model can ignore. A tool allowlist is <b>enforced</b>: without <code>edit</code> on the list, the agent can't call the edit tool at all. <b>Enforce guardrails with permissions, not prompts</b>; use prompts for guidance."},
+ {id:"d2-alias",d:"D2",l:"L1",q:"What are the tool aliases in an agent profile?",
+  a:"<ul><li><code>read</code> (view files)</li><li><code>edit</code> (write/str_replace)</li><li><code>search</code> (grep/glob)</li><li><code>execute</code> (shell/bash/powershell)</li><li><code>agent</code> (call custom agents)</li><li><code>web</code>, <code>todo</code>: not available in the cloud agent</li></ul>"},
+ {id:"d2-setup",d:"D2",l:"L1",q:"What is <code>copilot-setup-steps.yml</code> for?",
+  a:"<code>.github/workflows/copilot-setup-steps.yml</code> pre-installs tools and dependencies in the cloud agent's Actions environment before it starts work.",
+  t:"The job must be named exactly <code>copilot-setup-steps</code>."},
+ {id:"d2-fw",d:"D2",l:"L1",q:"How is the cloud agent's internet access controlled?",
+  a:"Through a <b>firewall</b> with an allowlist of hosts. Anything not on the list is blocked, which limits data leaks and untrusted downloads."},
+ {id:"d4-instr",d:"D4",l:"L1",q:"What are the three kinds of instruction files, and what scope does each have?",
+  a:"<ul><li><code>.github/copilot-instructions.md</code>: repo-wide</li><li><code>.github/instructions/*.instructions.md</code> with <code>applyTo: \"glob\"</code>: matching paths only</li><li><code>AGENTS.md</code>: open agent-instruction format</li></ul>Revising instructions is the <b>first and cheapest</b> tuning lever."},
+ {id:"d4-loaded",d:"D4",l:"L1",q:"How do you prove an instruction file was actually used?",
+  a:"Check <b>References / \"Used n references\"</b> under the chat answer, or the cloud agent's session logs. <b>Evidence first</b>, then blame the model."},
+ {id:"d4-root",d:"D4",l:"L1",q:"What are the root-cause categories for agent failures?",
+  a:"<ul><li><b>Reasoning error</b>: the model had the info and still got it wrong</li><li><b>Tool misuse</b>: wrong tool, bad arguments, missing permission</li><li><b>Context issue</b>: instruction not loaded, stale or conflicting context</li><li><b>Environment/config</b>: <code>applyTo</code> glob mismatch, wrong file name, setting off, missing dependency</li></ul>",
+  t:"Process: evidence (logs, plans, traces, artifacts) → classify → tune."},
+ {id:"d4-signal",d:"D4",l:"L1",q:"What counts as an automated evaluation signal for agent output?",
+  a:"Tools that turn \"did it do it right?\" into evidence: tests (pytest), type checkers (<code>mypy --disallow-untyped-defs</code>), linters, <b>CodeQL</b>, secret scanning, CI status. Qualitative signals: reviewer comments, how well it matches the plan."}
+];
+
+const KEY="gh600-marks";
+let marks={}; try{marks=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(marks))}catch(e){}};
+let view="cards", filter="ALL", onlyRev=false, order=CARDS.map((_,i)=>i);
+const $=s=>document.querySelector(s);
+const dom=id=>DOMAINS.find(d=>d.id===id);
+
+(function days(){
+  const t=new Date(2026,11,3), n=new Date(); n.setHours(0,0,0,0);
+  $("#days").textContent=Math.max(0,Math.round((t-n)/864e5));
+})();
+
+function renderDomains(){
+  $("#domains").innerHTML=DOMAINS.filter(d=>d.id!=="GEN").map(d=>{
+    const cs=CARDS.filter(c=>c.d===d.id), got=cs.filter(c=>marks[c.id]==="got").length;
+    const pct=cs.length?Math.round(got/cs.length*100):0;
+    return `<div class="dom" style="--c:var(${d.c})"><div class="k">${d.id} · ${d.w}</div><div class="n">${d.name}</div>
+      <div class="w">${cs.length} cards · ${got} mastered</div><div class="bar"><i style="width:${pct}%"></i></div></div>`}).join("");
+}
+function renderChips(){
+  const list=[{id:"ALL",name:"All",c:"--accent"},...DOMAINS];
+  $("#chips").innerHTML=list.map(d=>`<button class="chip" data-f="${d.id}" style="--c:var(${d.c})" aria-pressed="${filter===d.id}">${d.id==="ALL"?"All":d.id}</button>`).join("");
+  $("#chips").querySelectorAll("button").forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
+}
+function visible(){
+  return order.map(i=>CARDS[i]).filter(c=>(filter==="ALL"||c.d===filter)&&(!onlyRev||marks[c.id]!=="got"));
+}
+function markLabel(c){const m=marks[c.id];return m==="got"?'<span class="mark got">✓ got it</span>':m==="rev"?'<span class="mark rev">↻ review</span>':'<span class="mark"></span>'}
+function render(){
+  renderDomains(); renderChips();
+  $("#vCards").setAttribute("aria-pressed",view==="cards"); $("#vSheet").setAttribute("aria-pressed",view==="sheet");
+  $("#onlyRev").setAttribute("aria-pressed",onlyRev);
+  $("#shuffle").hidden=view!=="cards";
+  const vs=visible(), got=CARDS.filter(c=>marks[c.id]==="got").length;
+  $("#stat").textContent=`${vs.length} shown · ${got}/${CARDS.length} mastered`;
+  if(!vs.length){$("#out").innerHTML='<p class="empty">Nothing to review here. Every card in this filter is marked "Got it".</p>';return}
+  if(view==="cards"){
+    $("#out").innerHTML='<div class="grid">'+vs.map(c=>{const d=dom(c.d);return `
+      <div class="card" data-id="${c.id}" tabindex="0" role="button" aria-label="Flashcard, press to flip" style="--c:var(${d.c})"><div class="inner">
+        <div class="face front"><div class="meta"><span class="tag">${d.id}</span><span>${d.name}</span>${c.l===LATEST?'<span class="new">new</span>':''}${markLabel(c)}</div>
+          <div class="q">${c.q}</div><div class="hint">Tap to flip</div></div>
+        <div class="face back"><div class="meta"><span class="tag">${d.id}</span><span>Answer</span>${markLabel(c)}</div>
+          <div class="a">${c.a}</div>${c.t?`<div class="trap"><b>Exam trap:</b> ${c.t}</div>`:''}
+          <div class="acts"><button class="g" data-m="got">Got it</button><button class="r" data-m="rev">Review again</button></div></div>
+      </div></div>`}).join("")+'</div>';
+    $("#out").querySelectorAll(".card").forEach(el=>{
+      const flip=()=>el.classList.toggle("flip");
+      el.onclick=e=>{const b=e.target.closest("button[data-m]");if(b){e.stopPropagation();marks[el.dataset.id]=b.dataset.m;save();render();return}flip()};
+      el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip()}};
+    });
+  }else{
+    const groups=DOMAINS.filter(d=>vs.some(c=>c.d===d.id));
+    $("#out").innerHTML='<div class="sheet">'+groups.map(d=>`<section class="sec" style="--c:var(${d.c})"><h2>${d.id} · ${d.name}</h2>`+
+      vs.filter(c=>c.d===d.id).map(c=>`<div class="row"><b>${c.q}</b>${c.a}${c.t?`<div class="trap"><b>Trap:</b> ${c.t}</div>`:''}</div>`).join("")+'</section>').join("")+'</div>';
+  }
+}
+$("#vCards").onclick=()=>{view="cards";render()};
+$("#vSheet").onclick=()=>{view="sheet";render()};
+$("#onlyRev").onclick=()=>{onlyRev=!onlyRev;render()};
+$("#shuffle").onclick=()=>{order=order.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);render()};
+render();
+</script>
