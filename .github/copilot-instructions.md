@@ -13,3 +13,4 @@
 - Every change must include or update tests.
 - PR descriptions must list: what changed, why, how it has tested. 
 
+- Ignore GH-600-Review-Deck.html; it is study material, not project code.
