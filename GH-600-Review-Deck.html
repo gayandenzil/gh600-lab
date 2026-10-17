@@ -112,7 +112,7 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
   </div>
 
   <main id="out"></main>
-  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated after Lesson 1, Step 3.</footer>
+  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated after Lesson 1, Step 4.</footer>
 </div>
 
 <script>
@@ -169,6 +169,11 @@ const CARDS=[
   t:"The job must be named exactly <code>copilot-setup-steps</code>."},
  {id:"d2-fw",d:"D2",l:"L1",q:"How is the cloud agent's internet access controlled?",
   a:"Through a <b>firewall</b> with an allowlist of hosts. Anything not on the list is blocked, which limits data leaks and untrusted downloads."},
+ {id:"d6-fatigue",d:"D6",l:"L1",q:"Should a human approve every file edit an agent makes?",
+  a:"<b>No.</b> That causes approval fatigue (people click without reading) and removes the speed agents give you. Instead:<ul><li>Approve the <b>plan</b> up front</li><li>Let the agent work on its own <b>branch</b> (cheap to undo)</li><li>Run <b>automated checks</b>: tests, types, CI, CodeQL, scope</li><li>Review the <b>PR diff against the plan once</b></li><li>Use the strongest control for <b>irreversible</b> steps (merge, deploy, delete, permissions)</li></ul>",
+  t:"\"Minimize approvals that do not materially reduce risk.\" Match the approval to the risk."},
+ {id:"d1-loop",d:"D1",l:"L1",q:"What is the full plan-to-verify loop for an agent task?",
+  a:"Issue (with acceptance criteria) → <b>read-only planner</b> → plan saved as a file → <b>human approves the plan</b> (each criterion maps to a step, scope ok, steps verifiable, risks listed) → implementer runs <i>only</i> the approved plan → <b>automated checks</b> confirm the success criteria → PR review."},
  {id:"d4-instr",d:"D4",l:"L1",q:"What are the three kinds of instruction files, and what scope does each have?",
   a:"<ul><li><code>.github/copilot-instructions.md</code>: repo-wide</li><li><code>.github/instructions/*.instructions.md</code> with <code>applyTo: \"glob\"</code>: matching paths only</li><li><code>AGENTS.md</code>: open agent-instruction format</li></ul>Revising instructions is the <b>first and cheapest</b> tuning lever."},
  {id:"d4-loaded",d:"D4",l:"L1",q:"How do you prove an instruction file was actually used?",

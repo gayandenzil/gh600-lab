@@ -6,3 +6,8 @@ ___pycache__/
 .venv/
 .mypy_cache/
 .pytest_cache/
+
+# Python pachages
+node_modules/
+package-lock.json
+package.json
