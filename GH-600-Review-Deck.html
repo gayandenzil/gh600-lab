@@ -125,7 +125,7 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
   </div>
 
   <main id="out"></main>
-  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated after Lesson 1, Step 4.</footer>
+  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated after Lesson 1 (complete).</footer>
 </div>
 
 <script>
@@ -216,6 +216,9 @@ const CARDS=[
   t:"\"Minimize approvals that do not materially reduce risk.\" Match the approval to the risk."},
  {id:"d1-loop",d:"D1",l:"L1",q:"What is the full plan-to-verify loop for an agent task?",
   a:"Issue (with acceptance criteria) → <b>read-only planner</b> → plan saved as a file → <b>human approves the plan</b> (each criterion maps to a step, scope ok, steps verifiable, risks listed) → implementer runs <i>only</i> the approved plan → <b>automated checks</b> confirm the success criteria → PR review."},
+ {id:"gen-files",d:"GEN",l:"L1",q:"Name the 5 GitHub config files in your lab repo. Which ones <i>instruct</i>, and which <i>enforce or execute</i>?",
+  a:"<b>Instruct</b> (the model may follow):<ul><li><code>.github/copilot-instructions.md</code>: repo-wide</li><li><code>.github/instructions/*.instructions.md</code>: only paths matching <code>applyTo</code></li></ul><b>Enforce or execute</b> (it will happen):<ul><li><code>.github/agents/*.agent.md</code>: persona + <b>tool allowlist</b> (the body text only instructs)</li><li><code>.github/workflows/copilot-setup-steps.yml</code>: <b>installs</b> tools before the cloud agent starts</li><li><code>.github/pull_request_template.md</code>: pre-fills what/why/plan/tested for traceability</li></ul>",
+  t:"Many questions are really \"is this a request or a control?\" <code>.gitignore</code> is git, not GitHub."},
  {id:"d4-instr",d:"D4",l:"L1",q:"What are the three kinds of instruction files, and what scope does each have?",
   a:"<ul><li><code>.github/copilot-instructions.md</code>: repo-wide</li><li><code>.github/instructions/*.instructions.md</code> with <code>applyTo: \"glob\"</code>: matching paths only</li><li><code>AGENTS.md</code>: open agent-instruction format</li></ul>Revising instructions is the <b>first and cheapest</b> tuning lever."},
  {id:"d4-loaded",d:"D4",l:"L1",q:"How do you prove an instruction file was actually used?",
