@@ -17,6 +17,7 @@ def rsi(prices: list[float], period: int = 14) -> list[float]:
               100.0 - 100.0 / (1.0 + average_gain / average_loss)]
 
     for index in range(period, len(gains)):
+        """ Index starts from period because we already calculated the first RSI value using the first 'period' gains and losses. """
         average_gain = (average_gain * (period - 1) + gains[index]) / period
         average_loss = (average_loss * (period - 1) + losses[index]) / period
         result.append(
