@@ -1,4 +1,5 @@
 def rsi(prices: list[float], period: int = 14) -> list[float]:
+    """ Calculate the Relative Strength Index (RSI) for a list of prices."""
     if period <= 0:
         raise ValueError("period must be a positive integer")
     if len(prices) <= period:
