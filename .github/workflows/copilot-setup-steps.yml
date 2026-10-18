@@ -1,0 +1,21 @@
+name: "Copilot Setup Steps"
+
+on:
+  workflow_dispatch:  # lets your run it by hand and to test it
+  push:
+    paths: [.github/workflows/copilot-setup-steps.yml]  # only run when this file is changed
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  # leatst privilege
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install tools the agent needs
+        run: pip install pytest mypy
+      - name: Sanity check
+        run: pytest --version && mypy --version
