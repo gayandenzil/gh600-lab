@@ -80,6 +80,18 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .row:first-of-type{border-top:0}
 .row b{display:block;font-weight:600;margin-bottom:2px}
 .row ul{margin:2px 0;padding-left:18px}
+.map{display:grid;gap:14px}
+.mrow{display:grid;grid-template-columns:200px minmax(0,1fr);gap:18px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;padding:16px 18px}
+.mrow .id{font-family:var(--mono);font-size:12px;color:var(--c);font-weight:500}
+.mrow h2{font-family:var(--display);font-size:20px;line-height:1.2;margin:2px 0 6px;text-wrap:balance}
+.mrow .wt{font-family:var(--display);font-size:28px;color:var(--c);font-variant-numeric:tabular-nums;line-height:1}
+.mrow .wl{font-size:12px;color:var(--muted)}
+.plain{font-size:15px;margin:0 0 8px;max-width:70ch}
+.mrow h3{font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:10px 0 4px;font-weight:500}
+.mrow ul{margin:0;padding-left:18px;font-size:13.5px}
+.mrow .lab{font-size:13.5px;background:var(--accent-soft);border-radius:6px;padding:7px 10px;margin-top:8px}
+.mintro{font-size:14px;color:var(--muted);max-width:75ch;margin:0 0 4px}
+@media (max-width:640px){.mrow{grid-template-columns:1fr;gap:6px}}
 .empty{color:var(--muted);padding:30px 0;text-align:center}
 footer{margin-top:28px;font-size:12px;color:var(--muted)}
 @media (max-width:860px){.domains{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -103,6 +115,7 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
     <div class="seg" role="group" aria-label="View">
       <button id="vCards" aria-pressed="true">Cards</button>
       <button id="vSheet" aria-pressed="false">Cheat sheet</button>
+      <button id="vMap" aria-pressed="false">Exam map</button>
     </div>
     <div id="chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     <div class="spacer"></div>
@@ -125,10 +138,39 @@ const DOMAINS=[
  {id:"D6",name:"Guardrails",w:"10–15%",c:"--d6"},
  {id:"GEN",name:"Exam & setup",w:"",c:"--gen"}
 ];
+const MAP={
+ D1:{full:"Prepare agent architecture and SDLC processes",
+  plain:"Where an agent fits in the way software gets built, and how to set it up so it plans first, acts second, and leaves a trail people can check.",
+  covers:["Decide which SDLC steps an agent should do; spot and fix anti-patterns","Define inputs, outputs and success criteria for each task","Keep planning separate from action; output a structured plan; block action until it's approved","Choose how much autonomy to allow; produce inspectable artifacts; let humans step in without slowing delivery"],
+  lab:"Your planner agent, the issue with acceptance criteria, the approved plan file, the plan → approve → implement → verify loop."},
+ D2:{full:"Implement tool use and environment interaction",
+  plain:"What an agent is allowed to touch and where it runs: tools, MCP servers, repos, branches and CI, and what happens when something breaks. The biggest domain.",
+  covers:["Pick and configure tools and tool permissions (<code>tools:</code>)","Add MCP servers, the GitHub remote MCP server, MCP registries and allowlists","Limit an agent to one repo or branch; run it from CI; let it create branches and PRs","Error handling, retries, rollbacks, escalation, traceability"],
+  lab:"The <code>tools:</code> typo bug, the agent profile, <code>copilot-setup-steps.yml</code>. MCP comes in Weeks 2–3."},
+ D3:{full:"Manage memory, state, and execution",
+  plain:"What an agent remembers, for how long, and how it picks up long work without forgetting decisions or drifting off course.",
+  covers:["Short-term vs long-term vs external memory; keep memory relevant; expire and prune it","Save progress and decisions as durable artifacts; resume without redoing work","Detect and correct drift; share state across tools; avoid stale or conflicting context"],
+  lab:"Saving the plan to <code>docs/plans/</code> so a new session can resume. More in Week 4."},
+ D4:{full:"Perform evaluation, error analysis, and tuning",
+  plain:"How you tell whether an agent did a good job, find out why it failed, and adjust it.",
+  covers:["Set expected outcomes and constraints; pick qualitative and quantitative signals","Use automated scanners (tests, linters, CodeQL) as evaluation signals","Find failures in logs, plans, traces and artifacts; classify the root cause (reasoning, tool misuse, context, environment)","Tune instructions, workflows, memory and tool access"],
+  lab:"Checking References, using mypy and pytest as signals, classifying the <code>tool:</code> bug as a config error."},
+ D5:{full:"Orchestrate multi-agent coordination",
+  plain:"Running several agents together: who does what, keeping them from clashing, tracing handoffs, and recovering when one fails.",
+  covers:["Orchestration patterns; isolate agents running in parallel (branches, worktrees)","Resolve conflicts: overlapping edits, duplicated work, contradictory outputs","Logs, artifacts and handoff records for audit; post-hoc analysis","Spot failed or stalled runs; recover with rollback and human-in-the-loop; add, replace or retire agents safely"],
+  lab:"Planner → implementer was your first two-agent handoff. More in Week 6."},
+ D6:{full:"Implement guardrails and accountability",
+  plain:"Rules that keep agents safe and compliant, without so many approvals that nothing gets done.",
+  covers:["Rate actions by operational, security and compliance risk; set autonomy levels","Decide which actions need human judgment; block policy-violating actions","Least-privilege permissions and execution contexts","Explicit approval for irreversible changes, and only approvals that actually reduce risk"],
+  lab:"Read-only tools beating a prompt rule, and approving once at the right point instead of on every edit."},
+ GEN:{full:"Exam & setup",plain:"Exam facts and lab setup notes. Not a scored domain.",covers:[],lab:""}
+};
 const LATEST="L1";
 const CARDS=[
  {id:"gen-exam",d:"GEN",l:"L1",q:"GH-600 exam basics: pass mark and the heaviest domain?",
   a:"<ul><li>Pass: <b>700 / 1000</b></li><li>Heaviest: <b>D2 Tools & MCP (20–25%)</b></li><li>Then D1, D4, D5 (15–20% each); D3, D6 (10–15%)</li><li>Mostly GA features; common Preview features can appear</li></ul>"},
+ {id:"gen-domains",d:"GEN",l:"L1",q:"Name the 6 exam domains and their weights.",
+  a:"<ul><li><b>D1</b> Architecture & SDLC: 15–20%</li><li><b>D2</b> Tools & MCP: <b>20–25%</b> (biggest)</li><li><b>D3</b> Memory & state: 10–15%</li><li><b>D4</b> Evaluation & tuning: 15–20%</li><li><b>D5</b> Multi-agent: 15–20%</li><li><b>D6</b> Guardrails: 10–15%</li></ul>Memory aid: <b>Plan, Tools, Remember, Check, Team, Safety</b>. See the Exam map tab for details."},
  {id:"gen-free",d:"GEN",l:"L1",q:"What can you practice on Copilot Free, and what needs a paid plan?",
   a:"<ul><li><b>Free:</b> VS Code agent mode, custom instructions, <code>.agent.md</code> agents, prompt files, MCP in VS Code</li><li><b>Paid (Pro+):</b> Copilot <b>cloud agent</b>, which takes an assigned issue and opens a draft PR</li><li>Grayed-out models in the picker are premium; <b>Auto</b> picks a model for you</li></ul>"},
  {id:"d1-agent",d:"D1",l:"L1",q:"What makes something an agent rather than a chat assistant?",
@@ -215,13 +257,27 @@ function visible(){
 function markLabel(c){const m=marks[c.id];return m==="got"?'<span class="mark got">✓ got it</span>':m==="rev"?'<span class="mark rev">↻ review</span>':'<span class="mark"></span>'}
 function render(){
   renderDomains(); renderChips();
-  $("#vCards").setAttribute("aria-pressed",view==="cards"); $("#vSheet").setAttribute("aria-pressed",view==="sheet");
+  $("#vCards").setAttribute("aria-pressed",view==="cards"); $("#vSheet").setAttribute("aria-pressed",view==="sheet"); $("#vMap").setAttribute("aria-pressed",view==="map");
   $("#onlyRev").setAttribute("aria-pressed",onlyRev);
   $("#shuffle").hidden=view!=="cards";
+  $("#onlyRev").hidden=view==="map"; $("#chips").hidden=view==="map";
+  if(view==="map"){
+    $("#stat").textContent="6 scored domains";
+    $("#out").innerHTML='<p class="mintro">The exam is split into 6 <b>domains</b> (topic areas). Each one is a share of the questions. When a lesson says "Domain 2" or "D2", it means the topic below. Weights are ranges from the official study guide.</p><div class="map">'+
+      DOMAINS.filter(d=>d.id!=="GEN").map(d=>{const m=MAP[d.id],n=CARDS.filter(c=>c.d===d.id).length;return `
+      <section class="mrow" style="--c:var(${d.c})">
+        <div><div class="id">${d.id} · Domain ${d.id.slice(1)}</div><h2>${d.name}</h2><div class="wt">${d.w}</div><div class="wl">of exam questions · ${n} cards so far</div></div>
+        <div><p class="plain">${m.plain}</p><div class="wl">Official name: ${m.full}</div>
+          <h3>What gets tested</h3><ul>${m.covers.map(x=>`<li>${x}</li>`).join("")}</ul>
+          <div class="lab"><b>From your labs:</b> ${m.lab}</div></div>
+      </section>`}).join("")+'</div>';
+    return;
+  }
   const vs=visible(), got=CARDS.filter(c=>marks[c.id]==="got").length;
   $("#stat").textContent=`${vs.length} shown · ${got}/${CARDS.length} mastered`;
   if(!vs.length){$("#out").innerHTML='<p class="empty">Nothing to review here. Every card in this filter is marked "Got it".</p>';return}
   if(view==="cards"){
+    /* cards */
     $("#out").innerHTML='<div class="grid">'+vs.map(c=>{const d=dom(c.d);return `
       <div class="card" data-id="${c.id}" tabindex="0" role="button" aria-label="Flashcard, press to flip" style="--c:var(${d.c})"><div class="inner">
         <div class="face front"><div class="meta"><span class="tag">${d.id}</span><span>${d.name}</span>${c.l===LATEST?'<span class="new">new</span>':''}${markLabel(c)}</div>
@@ -243,6 +299,7 @@ function render(){
 }
 $("#vCards").onclick=()=>{view="cards";render()};
 $("#vSheet").onclick=()=>{view="sheet";render()};
+$("#vMap").onclick=()=>{view="map";render()};
 $("#onlyRev").onclick=()=>{onlyRev=!onlyRev;render()};
 $("#shuffle").onclick=()=>{order=order.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);render()};
 render();
