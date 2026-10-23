@@ -4,10 +4,8 @@ issue: 3
 risk: low
 autonomy: L2
 files:
-  - docs/plans/ema.plan.md
   - src/indicators/ema.py
   - tests/indicators/test_ema.py
-  - config/settings.yml
 acceptance:
   - id: AC1
     text: "src/indicators/ema.py exposes ema(prices: list[float], period: int) -> list[float]."
