@@ -125,7 +125,7 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
   </div>
 
   <main id="out"></main>
-  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated after Lesson 1 (complete).</footer>
+  <footer>Based on the official GH-600 study guide (Microsoft Learn, skills measured). Last updated during Lesson 2 (Step 2: plan validation and rulesets).</footer>
 </div>
 
 <script>
@@ -165,7 +165,7 @@ const MAP={
   lab:"Read-only tools beating a prompt rule, and approving once at the right point instead of on every edit."},
  GEN:{full:"Exam & setup",plain:"Exam facts and lab setup notes. Not a scored domain.",covers:[],lab:""}
 };
-const LATEST="L1";
+const LATEST="L2";
 const CARDS=[
  {id:"gen-exam",d:"GEN",l:"L1",q:"GH-600 exam basics: pass mark and the heaviest domain?",
   a:"<ul><li>Pass: <b>700 / 1000</b></li><li>Heaviest: <b>D2 Tools & MCP (20–25%)</b></li><li>Then D1, D4, D5 (15–20% each); D3, D6 (10–15%)</li><li>Mostly GA features; common Preview features can appear</li></ul>"},
@@ -219,6 +219,32 @@ const CARDS=[
  {id:"gen-files",d:"GEN",l:"L1",q:"Name the 5 GitHub config files in your lab repo. Which ones <i>instruct</i>, and which <i>enforce or execute</i>?",
   a:"<b>Instruct</b> (the model may follow):<ul><li><code>.github/copilot-instructions.md</code>: repo-wide</li><li><code>.github/instructions/*.instructions.md</code>: only paths matching <code>applyTo</code></li></ul><b>Enforce or execute</b> (it will happen):<ul><li><code>.github/agents/*.agent.md</code>: persona + <b>tool allowlist</b> (the body text only instructs)</li><li><code>.github/workflows/copilot-setup-steps.yml</code>: <b>installs</b> tools before the cloud agent starts</li><li><code>.github/pull_request_template.md</code>: pre-fills what/why/plan/tested for traceability</li></ul>",
   t:"Many questions are really \"is this a request or a control?\" <code>.gitignore</code> is git, not GitHub."},
+ {id:"d1-pra",d:"D1",l:"L2",q:"What's the difference between planning, reasoning and action, and why keep them apart?",
+  a:"<ul><li><b>Planning:</b> <i>what</i> gets done, in what order, in which files (no side effects)</li><li><b>Reasoning:</b> <i>why</i> this way: options, trade-offs, risks (no side effects)</li><li><b>Action:</b> edit, run, push, open a PR (<b>side effects</b>)</li></ul>Mistakes in thinking are cheap; mistakes in action cost something. Put a <b>checkpoint between thinking and doing</b>, and give write tools only to the acting step."},
+ {id:"d1-structured",d:"D1",l:"L2",q:"Why should an agent output a <i>structured</i> plan (YAML fields) instead of free text?",
+  a:"A machine can <b>validate</b> it before a human looks: required keys, <code>files:</code> in scope, a valid <code>risk</code>/<code>autonomy</code>, and every acceptance item has a <code>verified_by</code> check. Free text (\"I'll add EMA and some tests\") can't be checked.",
+  t:"In YAML, text containing <code>: </code> must be quoted. Your EMA plan broke on <code>ema(prices: list…)</code>."},
+ {id:"d1-validate",d:"D1",l:"L2",q:"How do you validate agent plans without slowing people down?",
+  a:"Run a <b>plan validator in CI</b> (<code>scripts/validate_plan.py</code> via <code>validate-plan.yml</code>) on every PR that touches <code>docs/plans/**</code>. Unknown keys (typos), out-of-scope files and missing checks fail automatically, so <b>humans only review plans that already pass</b>."},
+ {id:"d6-ladder",d:"D6",l:"L2",q:"What are the levels of the autonomy ladder (L0–L4)?",
+  a:"<ul><li><b>L0 Suggest:</b> answers only (Ask mode)</li><li><b>L1 Plan:</b> read-only, proposes (your planner)</li><li><b>L2 Act on a branch:</b> edits, tests, draft PR (<b>Copilot cloud agent default</b>)</li><li><b>L3 Auto-merge low-risk:</b> merges when all checks pass (docs typos, dependency bumps)</li><li><b>L4 Deploy:</b> ships to production (rare; environment approvals + rollback)</li></ul>Match autonomy to <b>risk and reversibility</b>."},
+ {id:"d6-cihigh",d:"D6",l:"L2",q:"The agent edited <code>.github/workflows/ci.yml</code>. It's a one-line diff. What risk level is it?",
+  a:"<b>High</b>, whatever the size of the diff:<ul><li>Workflows run with the <b>repo token and secrets</b></li><li>The agent could <b>weaken its own guardrails</b> (delete a test step)</li><li><b>Supply chain:</b> it can pull in new third-party actions</li></ul>Use L1–L2 with a <b>named human</b> (CODEOWNERS), never L3.",
+  t:"Anything that changes guardrails, permissions or CI is high risk."},
+ {id:"d6-required",d:"D6",l:"L2",q:"The plan validator failed (red ❌) but the PR was merged anyway. Why, and how do you fix it?",
+  a:"The check was only <b>advisory</b>: it ran, but nothing <i>required</i> it. Fix: a <b>ruleset</b> on <code>main</code> with <b>Require status checks to pass</b> → <code>validate</code>, plus Require a pull request. Then the Merge button is <b>blocked</b> until it's green.",
+  t:"Happened in your lab (PR #4). Instruct vs enforce again: a check that isn't required is only advice."},
+ {id:"d6-stuck",d:"D6",l:"L2",q:"A PR is stuck on \"Expected — Waiting for status to be reported\" for a required check. Why?",
+  a:"The required check's workflow <b>never ran</b> for that PR, usually because of a <b>path filter</b> (<code>paths:</code>) or a branch/event filter. GitHub waits for a result that will never come. Fix: let the required workflow <b>always run and report</b>, and put any skipping logic <i>inside</i> the job.",
+  t:"Happened in your lab (PR #8): the PR changed only the HTML deck, so <code>validate</code> (filtered to <code>docs/plans/**</code>) never started."},
+ {id:"d6-target",d:"D6",l:"L2",q:"An agent pushed broken code to its own branch and nothing stopped it. Is that a problem?",
+  a:"Usually <b>no</b>, by design. Rulesets apply <b>only to the branches they target</b>. Agents work freely on their own branches (fast, cheap to undo), and the <b>gate is at <code>main</code></b> (required checks + PR). That's \"intervention without slowing delivery.\"",
+  t:"Check which branches the ruleset targets before blaming the rule."},
+ {id:"d1-intervene",d:"D1",l:"L2",q:"Name 5 ways to let humans step in without slowing delivery.",
+  a:"<ul><li><b>Async checkpoints:</b> the agent works, the human reviews the PR when it's ready</li><li><b>Gate by path:</b> CODEOWNERS + ruleset only for risky folders</li><li><b>Steer mid-flight:</b> comment <code>@copilot …</code> on the agent's PR</li><li><b>Stop or undo:</b> stop the session, revert the branch, use VS Code checkpoints</li><li><b>Automated checks first:</b> humans only see green work</li></ul>"},
+ {id:"gen-basecompare",d:"GEN",l:"L2",q:"In a PR, what are <b>base</b> and <b>compare</b>?",
+  a:"<b>base</b> = the branch that <i>receives</i> the changes (usually <code>main</code>). <b>compare</b> = the branch that <i>brings</i> them (your feature or agent branch). Read it as <code>base ← compare</code>.",
+  t:"Swapped in your lab (PR #6): it merged main into the test branch, so the ruleset on main never applied."},
  {id:"d4-instr",d:"D4",l:"L1",q:"What are the three kinds of instruction files, and what scope does each have?",
   a:"<ul><li><code>.github/copilot-instructions.md</code>: repo-wide</li><li><code>.github/instructions/*.instructions.md</code> with <code>applyTo: \"glob\"</code>: matching paths only</li><li><code>AGENTS.md</code>: open agent-instruction format</li></ul>Revising instructions is the <b>first and cheapest</b> tuning lever."},
  {id:"d4-loaded",d:"D4",l:"L1",q:"How do you prove an instruction file was actually used?",

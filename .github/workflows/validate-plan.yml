@@ -2,10 +2,9 @@ name: Validate agent plans
 
 on:
   pull_request:
-    paths: ["docs/plans/**", scripts/validate_plan.py]
   push:
     branches: [main]
-    paths: ["docs/plans/**", "scripts/validate_plan.py"]
+    
 jobs:
  validate:
    runs-on: ubuntu-latest
