@@ -6,6 +6,7 @@ autonomy: L2
 files:
   - src/indicators/ema.py
   - tests/indicators/test_ema.py
+  - config/settings.yml
 acceptance:
   - id: AC1
     text: "src/indicators/ema.py exposes ema(prices: list[float], period: int) -> list[float]."
