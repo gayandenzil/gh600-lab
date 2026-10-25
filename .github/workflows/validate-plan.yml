@@ -1,5 +1,5 @@
 name: Validate agent plans
-
+# Do validation on pull requests and pushes to the main branch
 on:
   pull_request:
   push:
