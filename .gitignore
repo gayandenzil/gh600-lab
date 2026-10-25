@@ -6,6 +6,7 @@ ___pycache__/
 .venv/
 .mypy_cache/
 .pytest_cache/
+.vscode/
 
 # Python pachages
 node_modules/
