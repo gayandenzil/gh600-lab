@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
-    
+# jobs define the steps to run in the workflow    
 jobs:
  validate:
    runs-on: ubuntu-latest
