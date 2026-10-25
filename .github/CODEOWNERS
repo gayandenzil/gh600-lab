@@ -1,0 +1,5 @@
+# Risky paths need a named human. Everything else: checks only.
+/.github/   @gayandenzil
+/config/    @gayandenzil
+/scripts/   @gayandenzil
+*.yml       @gayandenzil    
